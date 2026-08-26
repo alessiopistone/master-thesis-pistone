@@ -1,0 +1,7 @@
+pandas>=2.2
+numpy>=1.26
+scipy>=1.13
+networkx>=3.3
+pm4py>=2.7
+matplotlib>=3.9
+seaborn>=0.13
