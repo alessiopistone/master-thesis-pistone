@@ -1,4 +1,4 @@
-# Python (cache and virtuan environments)
+# Python (cache and virtual environments)
 __pycache__/
 *.py[cod]
 .venv/
@@ -25,3 +25,7 @@ results/*
 # Windows system files
 Thumbs.db
 Desktop.ini
+
+# Spyder IDE configuration
+.spyproject/
+.spyderproject/
