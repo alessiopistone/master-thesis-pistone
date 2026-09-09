@@ -1,0 +1,46 @@
+% =====================================================================
+% chapters/01_introduction_and_pm.tex
+% Content only -- \chapter{Process Mining} is issued in main.tex.
+% =====================================================================
+
+\section{Process Mining Context}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Definition of an Event Log:} Cases, activities, timestamps, and the minimal attributes needed to reconstruct a process.
+	\item \textbf{The Reconstruction Problem:} How a sequence of discrete events becomes a process \emph{model}—the conceptual bridge into treating logs as graphs.
+\end{itemize}
+
+\section{Graph Theory Toolbox}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Formal Scope:} Definitions only (no process mining yet): $G = (V, E)$, directed/weighted (multi)graphs, degree, in-degree, out-degree, walks vs.\ paths vs.\ cycles.
+	\item \textbf{Purpose:} Establish a precise vocabulary so later sections can use formal terms instead of prose descriptions.
+\end{itemize}
+
+\section{The Directly-Follows Graph, Formally}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Graph Components:} $V = \text{activities}$, $E = \text{directly-follows pairs}$ extracted from traces, $w = \text{frequency or mean inter-activity duration}$.
+	\item \textbf{Key Fact:} A DFG is a general weighted digraph with \emph{no acyclicity guarantee}—this underpins the rest of the chapter.
+\end{itemize}
+
+\section{Spaghetti Processes, Quantified}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Core Concept:} Reframe ``spaghetti'' from a descriptive term into a measurable graph property.
+	\item \textbf{Candidate Metrics} (choose one as the working definition):
+	\begin{itemize}
+		\item Edge density relative to $|V|$
+		\item Mean out-degree
+		\item Sparsity index
+	\end{itemize}
+	\item \textbf{Dataset Application:} To be computed for both Chapter 4 datasets (\emph{Road Traffic Fine Management}, \emph{Sepsis Cases})—gives a concrete before/after number once Edmonds' cleaning (Ch.~2) is applied.
+\end{itemize}
+
+\section{Cycles as a Natural Part of Process Flow}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Self-loop:} Edge $(v,v)$.
+	\item \textbf{Rework loop:} Any cycle of length $\geq 2$ in the DFG.
+	\item \textbf{Rework Ratio Statistic:}
+	\[
+	\text{Rework Ratio} = \frac{\text{loop-edge weight}}{\text{total edge weight}}
+	\]
+	(another figure to carry into Chapter 4).
+	\item \textbf{Open Question (carried into Ch.~2):} Does any downstream algorithm require this structure to be acyclic, and if so, at what cost?
+\end{itemize}

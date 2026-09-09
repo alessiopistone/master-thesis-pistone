@@ -1,1 +1,55 @@
-Here the Graph Theory
+% =====================================================================
+% chapters/02_graph_theory.tex
+% Content only -- \chapter{Graph Theory} is issued in main.tex.
+% NOTE: Content covers the algorithms pipeline (Edmonds' / Dijkstra /
+% Ford-Fulkerson). Consider renaming \chapter{} in main.tex to match
+% (e.g., "Graph Algorithms").
+% =====================================================================
+
+\section{Pipeline Overview}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Overview Structure:} One introductory paragraph + one architectural diagram (DFG $\rightarrow$ three independent algorithmic lenses: de-spaghettification, shortest path, min-cut).
+	\item \textbf{Explicit Design Decision:}
+	\begin{itemize}
+		\item Edmonds' algorithm operates on the DFG for visualization and backbone extraction.
+		\item Dijkstra and Ford--Fulkerson operate on the \emph{original, unreduced} DFG for path- and flow-based analysis.
+		\item No algorithm's output serves as another's input (independent analysis execution).
+	\end{itemize}
+	\item \textbf{Comparative Framework Table:} Reference mapping structure:
+	\[
+	\text{Algorithm} \longrightarrow \text{Graph Problem} \longrightarrow \text{Process Mining Question} \longrightarrow \text{Ch.\,4 Output}
+	\]
+\end{itemize}
+
+\section{De-spaghettification: Minimum/Maximum Spanning Arborescence}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Formal Optimization Problem:} Find the min/max weight arborescence rooted at a designated start activity.
+	\item \textbf{Open Decision (Min vs.\ Max):} If $w = \text{frequency}$, maximizing the weight ($\text{Max Arborescence}$) retains the strongest incoming edges per node.
+	\item \textbf{Chu--Liu/Edmonds Algorithm:} Greedy edge selection + cycle contraction, accompanied by a worked toy example ($3\text{--}5$ nodes).
+	\item \textbf{Complexity Analysis:} $O(VE)$ naive vs.\ Tarjan's implementation—align theory with what \texttt{sparsification.py} executes.
+	\item \textbf{Operational Interpretation:} Meaning of the resulting arborescence as a process backbone and structural trade-offs (loss of rework loops and alternative paths).
+\end{itemize}
+
+\section{Shortest Path: ``Happy Path'' of Throughput Time}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Formal Problem Statement:} Single-source shortest path under non-negative weights ($w = \text{average inter-activity durations}$).
+	\item \textbf{Dijkstra's Algorithm:} Priority-queue implementation with standard complexity $O((V + E) \log V)$.
+	\item \textbf{Precondition Verification:} Non-negativity holds naturally by construction (durations cannot be negative).
+	\item \textbf{Proof Sketch:} Demonstrate that cycles do not break correctness under non-negative edge weights (settled nodes are never re-relaxed).
+	\item \textbf{Open Decision:} Define whether ``happy path'' denotes the single fastest end-to-end trace or the fastest path between two targeted activities of interest.
+\end{itemize}
+
+\section{Bottleneck Detection: Min-Cut / Max-Flow}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Open Modeling Question:} Define the operational meaning of ``capacity'' on a DFG edge (e.g., cases volume, available resources, throughput limit).
+	\item \textbf{Formal Flow Problem:} Max-flow / min-cut formulation using the Ford--Fulkerson algorithm (augmenting paths).
+	\item \textbf{Max-Flow Min-Cut Theorem:} State formally with literature citations—provides mathematical grounding for equating \emph{min cut} with \emph{operational bottleneck}.
+	\item \textbf{Complexity \& Conditions:} Algorithmic complexity and integer-capacity constraints for termination guarantees.
+	\item \textbf{Operational Interpretation:} Identifying critical bottleneck edges/activities and their physical impact on process flow.
+\end{itemize}
+
+\section{Synthesis: Reading the Three Outputs Together}
+\begin{itemize}[leftmargin=*]
+	\item \textbf{Integrated Framework:} How the arborescence (visual backbone), happy path (temporal benchmark), and min-cut (structural bottleneck) are combined in Chapter 4.
+	\item \textbf{Evaluation Criteria:} Establishes a unified comparative framework before applying algorithms to empirical datasets.
+\end{itemize}
