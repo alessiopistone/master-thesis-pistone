@@ -2,20 +2,50 @@
 % chapters/01_introduction_and_pm.tex
 % Content only -- \chapter{Process Mining} is issued in main.tex.
 % =====================================================================
+Digital transformation is reshaping organizational functions across virtually every domain and industry~\cite{verhoef2021digitaltransformation}. As a consequence, nearly every operational step leaves a footprint that can be traced: a record of when, where and by whom each activity was executed.
+Process mining builds exactly on this phenomenon, reconstructing the real world execution of the processes from the digital traces they generate.~\cite{aalst2011manifesto} \\
+This chapter introduces the foundational concepts to formalize this reconstruction objective. 
 
-\section{Process Mining Context}
+\section{Types of Process Mining} 
+In its embrional form, three types of process mining are theoreticized. 
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{Discovery}: taking an event log and producing a model without using a-priori information ;
+		\item \textbf{Conformance}:an existing process model is compared with the one reconstructed with event logs to check if the empirical records conforms to the model and vice versa;
+		\item \textbf{Enhancement}: the idea is to improve an already existing process model using information about the actual process, as recorded in some event log.
+	\end{itemize}
+	In more recent works, the Enhancement type of process mining is further developed in process \emph{Reengineering} and \emph{Operational support}~\cite{aalst2018reconstruction}
+	
+
+
+
+\section{Definition of an Event Log} 
+A business process consists of a sequence of activities performed to achieve a specific outcome. An \emph{event log} is defined as a collection of events recording the
+execution of such a process. Each event refers to a single activity, performed at a specific point in time, and is associated with a unique case~\cite{reinkemeyer2020nutshell}. 
+In its minimal form, an event log requires the following three attributes for every event:
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{Case ID}: a unique identifier for the case to which the event belongs;
+		\item \textbf{Activity}: a label specifying which activity was
+		executed;
+		\item \textbf{Timestamp}: the time at which the activity was
+		performed.
+	\end{itemize}
+
+Additional information about events might be stored in the event logs. In fact, modern process mining techniques incorporate different types of extra data elements in the process reconstruction~\cite{aalst2012opportunities}.
+	
+An event log is a collection of Traces... (read the cool article)
+	
+
+
+\section{Model and Abstraction}
+
+Process Mining, unlike people might think, does not originates from data mining, or machine learning, but from Business Process Management. The revolution was in the mathematical structure used to model the process (Petri nets) and the abstraction (directly followed graphs)~\cite{aalst2018reconstruction}
+
 \begin{itemize}[leftmargin=*]
-	\item \textbf{Definition of an Event Log:} Cases, activities, timestamps, and the minimal attributes needed to reconstruct a process.
-	\item \textbf{The Reconstruction Problem:} How a sequence of discrete events becomes a process \emph{model}—the conceptual bridge into treating logs as graphs.
+	\item \textbf{Petri Nets:} Petri Nets are the model.
+	\item \textbf{Directly Follows Graphs:} DFG are the abstractions.
 \end{itemize}
 
-\section{Graph Theory Toolbox}
-\begin{itemize}[leftmargin=*]
-	\item \textbf{Formal Scope:} Definitions only (no process mining yet): $G = (V, E)$, directed/weighted (multi)graphs, degree, in-degree, out-degree, walks vs.\ paths vs.\ cycles.
-	\item \textbf{Purpose:} Establish a precise vocabulary so later sections can use formal terms instead of prose descriptions.
-\end{itemize}
-
-\section{The Directly-Follows Graph, Formally}
+\section{From DFG to Directed graphs}
 \begin{itemize}[leftmargin=*]
 	\item \textbf{Graph Components:} $V = \text{activities}$, $E = \text{directly-follows pairs}$ extracted from traces, $w = \text{frequency or mean inter-activity duration}$.
 	\item \textbf{Key Fact:} A DFG is a general weighted digraph with \emph{no acyclicity guarantee}—this underpins the rest of the chapter.
