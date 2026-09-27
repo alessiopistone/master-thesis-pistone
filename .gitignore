@@ -13,8 +13,13 @@ dist/
 build/
 
 # Data & Output
-data/generated/*
-!data/generated/.gitkeep
+data/
+results/*
+!results/.gitkeep
+
+# Data & Output
+data/*
+!data/README.md
 results/*
 !results/.gitkeep
 
