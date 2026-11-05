@@ -13,7 +13,7 @@ In its embrional form, three types of process mining are theoreticized.
 		\item \textbf{Conformance}:an existing process model is compared with the one reconstructed with event logs to check if the empirical records conforms to the model and vice versa;
 		\item \textbf{Enhancement}: the idea is to improve an already existing process model using information about the actual process, as recorded in some event log.
 	\end{itemize}
-	In more recent works, the Enhancement type of process mining is further developed in process \emph{Reengineering} and \emph{Operational support}~\cite{aalst2018reconstruction}
+	In more recent works, the Enhancement type of process mining is further developed in process \emph{Reengineering} and \emph{Operational support}.
 	
 
 
@@ -31,25 +31,242 @@ In its minimal form, an event log requires the following three attributes for ev
 	\end{itemize}
 
 Additional information about events might be stored in the event logs. In fact, modern process mining techniques incorporate different types of extra data elements in the process reconstruction~\cite{aalst2012opportunities}.
+
+\subsection{Formalizing the Event Log}
+\label{subsec:event-log-formal}
+
+An event log can be understood as a particular view on a broader
+\emph{event collection}. While an event collection has no fixed notion of
+case, an event log groups events into cases, giving each one a well-defined
+structure. We adopt the formalization of~\cite{aalst2018reconstruction}.
+
+\begin{definition}[Event Collection]
+	\label{def:event-collection}
+	Let $\mathcal{E}$ be the universe of event identifiers, $\mathcal{U}_{Att}$
+	the universe of attribute names, and $\mathcal{U}_{Val}$ the universe of
+	attribute values. An \emph{event collection} is a triple
+	$EC = (E, Att, \pi)$ with $E \subseteq \mathcal{E}$,
+	$Att \subseteq \mathcal{U}_{Att}$, and
+	$\pi \in E \to (Att \not\to \mathcal{U}_{Val})$. For an event $e \in E$ and
+	an attribute $a \in \mathrm{dom}(\pi(e))$, $\pi(e)(a)$ denotes the value of
+	attribute $a$ for event $e$.
+\end{definition}
+
+Extracting an event log from an event collection requires selecting a
+subset of events and mapping their attributes onto the three mandatory
+process mining concepts: case, activity, and timestamp. Every trace in the
+resulting log is additionally assumed to begin with a unique artificial
+start activity $\triangleright$ and end with a unique artificial end
+activity $\square$, which simplifies the formal treatment of process
+discovery without any loss of generality.
+
+\begin{definition}[Event Log]
+	\label{def:event-log}
+	Let $A$ be a set of activities with $\{\triangleright, \square\} \subseteq A$,
+	and let $\mathcal{B}(A^{*})$ denote the set of all finite multisets of
+	sequences over $A$. An \emph{event log} is a non-empty multiset of traces
+	$L \in \mathcal{B}(A^{*})$. A trace $\sigma \in L$ is a sequence of
+	activities of the form
+	\[
+	\sigma = \langle \triangleright, a_1, a_2, \dots, a_n, \square \rangle,
+	\qquad \{\triangleright, \square\} \cap \{a_1, \dots, a_n\} = \emptyset.
+	\]
+	The set of activities occurring in $L$ is denoted
+	$\mathrm{act}(L) = \bigcup_{\sigma \in L} \{a \in \sigma\} \subseteq A$.
+\end{definition}
+
+As a concrete illustration, the log
+$L_1 = [\langle \triangleright, a, b, c, d, \square \rangle^{45},
+\langle \triangleright, a, c, b, d, \square \rangle^{35},
+\langle \triangleright, a, e, d, \square \rangle^{20}]$
+contains $100$ traces and $580$ events in
+total~\cite{aalst2018reconstruction}, with
+$\mathrm{act}(L_1) = \{\triangleright, a, b, c, d, e, \square\}$.
+
+\subsection{Log and Model Abstractions}
+\label{subsec:abstractions}
+
+Process discovery techniques rarely operate directly on an event log.
+Instead, most approaches first reduce the log to a more compact
+\emph{abstraction}, discover a corresponding abstraction on the model side,
+and only then reconstruct a process model. This two-sided mapping is what
+allows discovery algorithms with very different internal representations
+(directly-follows graphs, transition systems, declarative constraints) to be
+described within a single, unifying framework~\cite{aalst2018reconstruction}.
+
+\begin{definition}[Log and Model Abstraction Functions]
+	\label{def:abstractions}
+	Let $L \in \mathcal{B}(A^{*})$ be an event log and
+	$PM \in \mathcal{P}(A^{*})$ a process model, i.e., a set of traces over
+	activity set $A$. We distinguish three functions:
+	\begin{itemize}[leftmargin=*]
+		\item $m_{L2LA}$, the \emph{log abstraction function}, maps an event log
+		onto a \emph{log abstraction} $m_{L2LA}(L)$ (e.g., a weighted
+		directly-follows graph);
+		\item $m_{LA2MA}$, applied to a log abstraction, yields a
+		\emph{model abstraction} $m_{LA2MA}(m_{L2LA}(L))$, typically by
+		discarding infrequent behavior through a threshold;
+		\item $m_{PM2MA}$, the \emph{model abstraction function}, maps a process
+		model onto the same type of abstraction, so that $m_{PM2MA}(PM)$ is
+		directly comparable with $m_{LA2MA}(m_{L2LA}(L))$.
+	\end{itemize}
+\end{definition}
+
+Recovering a process model from a model abstraction requires inverting
+$m_{PM2MA}$. Since multiple models may share the same abstraction, this
+inverse is resolved by assuming $m_{PM2MA}^{-1}$ returns a canonical model
+for a given abstraction, which yields the overall discovery expression
+\begin{equation}
+	\label{eq:discovery-composition}
+	PM = m_{PM2MA}^{-1}\bigl(m_{LA2MA}(m_{L2LA}(L))\bigr),
+\end{equation}
+turning an event log directly into a process model~\cite{aalst2018reconstruction}.
+Equation~\eqref{eq:discovery-composition} will serve as the organizing
+principle for Chapter~\ref{chap:graphtheory}: the directly-follows graph
+introduced in Section~\ref{sec:dfg} is precisely one instance of the log
+abstraction $m_{L2LA}$, and the arborescence, shortest-path, and min-cut
+algorithms discussed there each operate downstream of this abstraction step.
 	
-An event log is a collection of Traces... (read the cool article)
-	
+\subsection{The Directly-Follows Graph}
+\label{subsec:dfg-formal}
 
+A \emph{directly-follows graph} (DFG) is an \emph{abstraction} of the
+behavior actually observed in an event log: it records only whether one
+activity is, with what frequency, immediately followed by another, without
+any of the causal or concurrency semantics a formal process model such as a
+Petri net would provide. The DFG is accordingly the simplest and most
+widely used log abstraction $m_{L2LA}$ introduced in
+Definition~\ref{def:abstractions}, and is the basis of nearly every
+commercial process mining tool~\cite{aalst2018reconstruction}.
 
-\section{Model and Abstraction}
+\begin{definition}[Directly-Follows Graph]
+	\label{def:dfg}
+	Let $A$ be a set of activities with $\{\triangleright, \square\} \subseteq A$.
+	A \emph{directly-follows graph} is a pair $DFG = (A, R)$ with
+	$R \subseteq A \times A$ a relation such that no activity directly follows
+	$\square$ and no activity directly precedes $\triangleright$, i.e.,
+	\[
+	\{ (a, \triangleright) \in R \mid a \in A \} =
+	\{ (\square, a) \in R \mid a \in A \} = \emptyset.
+	\]
+\end{definition}
 
-Process Mining, unlike people might think, does not originates from data mining, or machine learning, but from Business Process Management. The revolution was in the mathematical structure used to model the process (Petri nets) and the abstraction (directly followed graphs)~\cite{aalst2018reconstruction}
+In practice, what matters is not merely whether one activity directly
+follows another, but \emph{how often} it does so; this motivates a weighted
+variant obtained directly from an event log via the log abstraction function
+$m_{L2LA}$ of Definition~\ref{def:abstractions}.
+
+\begin{definition}[Weighted Directly-Follows Graph]
+	\label{def:wdfg}
+	Let $L \in \mathcal{B}(A^{*})$ be an event log. The \emph{weighted
+		directly-follows graph} of $L$ is $WDFG = (A, R_w)$, where $A = \mathrm{act}(L)$
+	and
+	\[
+	R_w = \bigcup_{\sigma \in L} \bigl[\, (a, b) \in A \times A \mid
+	\exists_{1 \leq i < |\sigma|}\ \sigma(i) = a \ \wedge\ \sigma(i+1) = b \,\bigr].
+	\]
+	For $(a, b) \in A \times A$, $R_w(a, b)$ denotes the number of times activity
+	$a$ is directly followed by activity $b$ across all traces of
+	$L$~\cite{aalst2018reconstruction}.
+\end{definition}
+
+Computing $WDFG$ from $L$ corresponds exactly to applying $m_{L2LA}$
+(Definition~\ref{def:abstractions}) with the directly-follows graph as the
+chosen abstraction. An ordinary, non-weighted $DFG$ is then recovered by
+applying $m_{LA2MA}$: an arc $(a, b)$ is retained if and only if its weight
+$R_w(a, b)$ exceeds some threshold $\theta$, absolute or relative to the
+other weights in $R_w$. Crucially, Definition~\ref{def:dfg} imposes
+\emph{no acyclicity constraint} on $R$: a $WDFG$ is a general weighted
+digraph that may contain self-loops and longer cycles, reflecting rework and
+repeated behavior in the underlying process. This property is the starting
+point for the discussion in Section~\ref{sec:dfg-to-digraph}, where the
+$WDFG$ is treated as a directed graph $G = (V, E, w)$ and subjected to the
+graph-theoretic algorithms developed in Chapter~\ref{chap:graphtheory}.
+
+\subsection{Petri Nets}
+\label{subsec:petri-nets}
+
+The $WDFG$ of Definition~\ref{def:wdfg} abstracts \emph{observed} behavior,
+but is not itself a process model: it makes no claim about which traces are
+admissible, only about which activities were seen to follow one another. A
+\emph{Petri net} is the formal target model into which a (filtered) DFG is
+ultimately converted by a discovery algorithm, and is accordingly the
+notation used throughout this work to represent
+$PM \in \mathcal{P}(A^{*})$.
+
+\begin{definition}[Labeled Petri Net]
+	\label{def:petri-net}
+	A \emph{Petri net} is a tuple $N = (P, T, F)$, where $P$ is a finite set of
+	places, $T$ is a finite set of transitions, $P \cap T = \emptyset$, and
+	$F \subseteq (P \times T) \cup (T \times P)$ is the flow relation. A
+	\emph{labeled} Petri net $N = (P, T, F, l, A)$ extends $N$ with an activity
+	set $A$ and a labeling function $l \in T \not\to A$, where a transition
+	without a label is \emph{silent}. Equipped with an initial and a final
+	marking, the behavior of $N$ is the set of activity sequences obtainable
+	by firing transitions from the initial to the final marking, i.e., a
+	process model $PM \subseteq A^{*}$ in the sense of
+	Definition~\ref{def:abstractions}~\cite{aalst2018reconstruction}.
+\end{definition}
+
+\subsection{Process discovery: from Event Log to Process Model}
+\label{subsec:dfg-to-petri}
+
+The \texttt{pm4py} pipeline implemented in \texttt{loader.py} follows
+precisely the composition of Equation~\eqref{eq:discovery-composition}.
+Given an event log $L$, \texttt{pm4py.discover\_dfg} computes the weighted
+directly-follows graph $m_{L2LA}(L) = WDFG$ of Definition~\ref{def:wdfg}. A
+discovery algorithm then applies $m_{LA2MA}$, typically by thresholding
+$R_w$ to discard infrequent arcs, before applying $m_{PM2MA}^{-1}$ to
+synthesize a labeled Petri net $N$ (Definition~\ref{def:petri-net}) whose
+behavior $PM_N$ reproduces the retained directly-follows relations. The
+resulting net is the process model used in
+Chapter~\ref{chap:comparativeanalysis} to compare the empirical structure of
+the Road Traffic Fine Management and Sepsis Cases event
+logs~\cite{aalst2018reconstruction}.
+
+\subsection{The Alpha Algorithm}
+\label{subsec:alpha-algorithm}
+
+The $m_{PM2MA}^{-1}$ step of Equation~\eqref{eq:discovery-composition} is,
+in practice, carried out by a concrete discovery algorithm. The
+\emph{alpha algorithm} ($\alpha$-algorithm) was the first discovery
+technique to take concurrency as an explicit starting point, rather than as
+an afterthought layered on top of a sequential
+model~\cite{aalst2004workflow, aalst2018reconstruction}. Given an event log
+$L$, the $\alpha$-algorithm derives, for every pair of activities
+$a, b \in \mathrm{act}(L)$, one of four ordering relations from the
+directly-follows information of Definition~\ref{def:wdfg}:
 
 \begin{itemize}[leftmargin=*]
-	\item \textbf{Petri Nets:} Petri Nets are the model.
-	\item \textbf{Directly Follows Graphs:} DFG are the abstractions.
+	\item $a \to_L b$ (\emph{causality}): $a$ is directly followed by $b$
+	somewhere in $L$, but $b$ is never directly followed by $a$;
+	\item $a \parallel_L b$ (\emph{parallelism}): $a$ is directly followed by
+	$b$ \emph{and} $b$ is directly followed by $a$ somewhere in $L$, indicating
+	concurrent execution;
+	\item $a \#_L b$ (\emph{independence/choice}): neither $a$ directly
+	follows $b$ nor $b$ directly follows $a$ anywhere in $L$;
+	\item $a \leftarrow_L b$: the symmetric counterpart of $a \to_L b$.
 \end{itemize}
 
-\section{From DFG to Directed graphs}
-\begin{itemize}[leftmargin=*]
-	\item \textbf{Graph Components:} $V = \text{activities}$, $E = \text{directly-follows pairs}$ extracted from traces, $w = \text{frequency or mean inter-activity duration}$.
-	\item \textbf{Key Fact:} A DFG is a general weighted digraph with \emph{no acyclicity guarantee}—this underpins the rest of the chapter.
-\end{itemize}
+These relations are used to group activities into sets that become the
+input and output places of a labeled Petri net
+(Definition~\ref{def:petri-net}): causal relations $a \to_L b$ are turned
+into places connecting $a$ to $b$, while parallel and choice relations
+determine how multiple outgoing or incoming places are merged. The
+resulting net is, by construction, the canonical model that
+$m_{PM2MA}^{-1}$ returns for the (filtered) directly-follows abstraction
+$m_{LA2MA}(m_{L2LA}(L))$ of a log $L$~\cite{aalst2004workflow}.
+
+The $\alpha$-algorithm is guaranteed to rediscover a behaviorally
+equivalent process model for a restricted, well-defined class of
+processes~\cite{aalst2004workflow}. Outside this class, in particular in
+the presence of incomplete logs, short loops, or non-free-choice
+constructs, the algorithm may return a model that is not
+sound (e.g., exhibiting deadlocks) or that fails to allow for behavior
+actually observed in $L$~\cite{aalst2018reconstruction}. These limitations
+motivate the family of more robust discovery techniques, discussed next,
+that \texttt{pm4py} implements alongside the
+$\alpha$-algorithm~\cite{berti2019process}.
 
 \section{Spaghetti Processes, Quantified}
 \begin{itemize}[leftmargin=*]

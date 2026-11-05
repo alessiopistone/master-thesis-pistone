@@ -47,6 +47,23 @@
 \usepackage{mathtools}
 
 % ---------------------------------------------------------------------
+% Theorem-like environments
+% (amsthm alone does not define "definition", "theorem", ...)
+% ---------------------------------------------------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% ---------------------------------------------------------------------
 % Graphics & Figures
 % ---------------------------------------------------------------------
 \usepackage{graphicx}
@@ -95,18 +112,6 @@
 }
 
 % ---------------------------------------------------------------------
-% Hyperlinks
-% (loaded late, but before titlesec/fancyhdr as is standard practice)
-% ---------------------------------------------------------------------
-\usepackage{hyperref}
-\hypersetup{
-	colorlinks=true,
-	linkcolor=blue,
-	citecolor=blue,
-	urlcolor=blue
-}
-
-% ---------------------------------------------------------------------
 % Appendices
 % ---------------------------------------------------------------------
 \usepackage{appendix}
@@ -131,6 +136,19 @@
 % Line Breaking & Widow Control
 % ---------------------------------------------------------------------
 \usepackage[all]{nowidow}
+
+% ---------------------------------------------------------------------
+% Hyperlinks
+% (loaded late so that all other packages — nomencl, appendix,
+% pdfpages, ... — are already in place; hyperref should come last)
+% ---------------------------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue
+}
 
 % =====================================================================
 % Custom Commands & Thesis Metadata
