@@ -12,14 +12,9 @@ ENV/
 dist/
 build/
 
-# Data & Output
+# Data, Datasets & Output
 data/
-results/*
-!results/.gitkeep
-
-# Data & Output
-data/*
-!data/README.md
+datasets/
 results/*
 !results/.gitkeep
 
